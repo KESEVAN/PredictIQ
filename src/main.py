@@ -12,6 +12,8 @@ import plotly.graph_objects as go
 from datetime import datetime
 from typing import Dict, List, Tuple
 import logging
+import os
+import json
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -41,3 +43,24 @@ if __name__ == "__main__":
     # Visualize results
     logger.info("Generating visualizations...")
     analyzer.visualize_results(raw_df, predictions, anomalies)
+
+    # # Analyze anomalies with LLM
+    # logger.info("Performing LLM analysis of anomalies...")
+    # anomaly_analysis = analyzer.analyze_anomalies(raw_df, anomalies)
+    
+    # # Generate performance report
+    # logger.info("Generating performance report...")
+    # performance_report = analyzer.generate_report(raw_df, anomalies)
+    
+    # # Save analysis results
+    # output_dir = 'reports'
+    # os.makedirs(output_dir, exist_ok=True)
+    
+    # # Save anomaly analysis
+    # with open(os.path.join(output_dir, 'anomaly_analysis.json'), 'w') as f:
+    #     json.dump(anomaly_analysis, f, indent=2, default=str)
+    
+    # # Save performance report
+    # with open(os.path.join(output_dir, 'performance_report.md'), 'w') as f:
+    #     f.write(performance_report)
+    
