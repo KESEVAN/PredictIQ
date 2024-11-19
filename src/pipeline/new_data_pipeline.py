@@ -21,7 +21,7 @@ class DataPipeline:
         }
         return pd.DataFrame(data)
     
-    def preprocess_data(self, df: pd.DataFrame) -> Dict[str, np.ndarray]:
+    def preprocess_data(self, df: pd.DataFrame, fit_scaler=True) -> Dict[str, np.ndarray]:
         """Preprocess data for model training"""
         # Create time-based features
         df['hour'] = df['timestamp'].dt.hour
@@ -30,10 +30,14 @@ class DataPipeline:
         # Scale numerical features
         numerical_cols = ['cpu_usage', 'memory_usage', 'response_time', 
                          'error_rate', 'throughput']
-        scaled_data = self.scaler.fit_transform(df[numerical_cols])
+        if fit_scaler:  # Fit the scaler only if fit_scaler is True
+            scaled_data = self.scaler.fit(df[numerical_cols])
         
+        scaled_data = self.scaler.transform(df[numerical_cols])  # Transform only
+
         return {
             'features': scaled_data,
             'timestamps': df['timestamp'].values,
-            'raw_data': df[numerical_cols].values
+            'raw_data': df[numerical_cols].values,
+            'scaler': self.scaler  # Store the scaler for later use
         }

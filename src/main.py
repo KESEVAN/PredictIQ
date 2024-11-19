@@ -23,7 +23,7 @@ if __name__ == "__main__":
     pipeline = DataPipeline()
     raw_df = pipeline.generate_sample_data()
     processed_data = pipeline.preprocess_data(raw_df)
-    
+    scaler = processed_data['scaler']  # Retrieve the scaler
     # Train models
     logger.info("Initializing and training models...")
     trainer = ModelTrainer()
@@ -32,7 +32,10 @@ if __name__ == "__main__":
     # Analyze performance
     logger.info("Analyzing performance...")
     analyzer = PerformanceAnalyzer(trainer)
+    # processed_data['features'] = scaler.transform(processed_data['features'])  # Scale features
     predictions = analyzer.make_predictions(processed_data['features'])
+    predictions = scaler.inverse_transform(predictions)
+    print(predictions)
     anomalies = analyzer.detect_anomalies(processed_data['features'])
     
     # Visualize results

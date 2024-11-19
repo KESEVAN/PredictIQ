@@ -32,7 +32,8 @@ class PerformanceAnalyzer:
 
         # Predict anomalies (-1 = anomaly, 1 = normal)
         predictions = self.anomaly_detector.predict(features)
-
+        
+        print(predictions)
         # # Create a DataFrame to combine timestamps, features, and anomaly labels
         # df = pd.DataFrame(features, columns=[f"feature_{i}" for i in range(features.shape[1])])
         # df['timestamp'] = pd.to_datetime(timestamps)
@@ -42,11 +43,20 @@ class PerformanceAnalyzer:
     
     def make_predictions(self, data: np.ndarray) -> np.ndarray:
         """Make predictions using the LSTM model"""
+        # Prepare sequences
         sequences = []
         for i in range(len(data) - self.trainer.sequence_length):
             sequences.append(data[i:(i + self.trainer.sequence_length)])
         sequences = np.array(sequences)
-        return self.trainer.lstm_model.predict(sequences)
+        
+        # Reshape if needed
+        if len(sequences.shape) == 2:
+            sequences = sequences.reshape((sequences.shape[0], sequences.shape[1], -1))
+        
+        # Make predictions
+        predictions = self.trainer.lstm_model.predict(sequences)
+        
+        return predictions
     
     def visualize_results(self, raw_data: pd.DataFrame, predictions: np.ndarray, anomalies: np.ndarray):
         """Create interactive visualizations using plotly"""
@@ -60,7 +70,7 @@ class PerformanceAnalyzer:
                 x=raw_data['timestamp'],
                 y=raw_data[metric],
                 name='Actual',
-                line=dict(color='blue')
+                line=dict(color='grey')
             ))
             
             # Plot predictions
